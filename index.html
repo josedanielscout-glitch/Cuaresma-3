@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Constructor de Puentes - Cuaresma</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Animaciones base que simulaban las de React */
+        .step-container {
+            display: none;
+            animation: fadeInSlideUp 0.5s ease-out forwards;
+        }
+        .step-container.active {
+            display: block;
+        }
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-25%) translateX(-50%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+            50% { transform: translateY(0) translateX(-50%); animation-timing-function: cubic-bezier(0,0,0.2,1); }
+        }
+        .animate-bounce-custom {
+            animation: bounce 1s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-violet-500/30 pb-20">
+
+    <!-- Header -->
+    <header class="pt-12 pb-6 px-4 text-center">
+        <div class="inline-flex items-center justify-center p-3 bg-violet-900/30 rounded-full mb-4 ring-1 ring-violet-500/50 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
+            <i data-lucide="hammer" class="w-8 h-8 text-amber-400"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-amber-300 drop-shadow-sm">
+            El Constructor de Puentes
+        </h1>
+        <p class="mt-4 text-lg text-violet-200/80 max-w-2xl mx-auto font-light">
+            Esta Cuaresma, no solo renuncies al mal. Transforma tus cadenas en los cimientos de tu salvación.
+        </p>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4">
+        
+        <!-- Indicador de progreso -->
+        <div class="flex justify-between items-center mb-8 relative">
+            <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -z-10 -translate-y-1/2"></div>
+            <div id="prog-1" class="step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 bg-violet-600 text-white shadow-[0_0_15px_rgba(124,58,237,0.5)]">1</div>
+            <div id="prog-2" class="step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 bg-slate-900 text-slate-500 border border-slate-700">2</div>
+            <div id="prog-3" class="step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 bg-slate-900 text-slate-500 border border-slate-700">3</div>
+            <div id="prog-4" class="step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 bg-slate-900 text-slate-500 border border-slate-700">4</div>
+        </div>
+
+        <!-- Contenedor Principal de la Tarjeta -->
+        <div class="bg-violet-950/40 border border-violet-800/50 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm">
+            
+            <!-- PASO 1: IDENTIFICAR CADENAS -->
+            <div id="step-1" class="step-container active">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-semibold text-white flex items-center justify-center gap-2">
+                        <i data-lucide="link" class="text-violet-400"></i> Identifica tus Cadenas
+                    </h2>
+                    <p class="text-slate-400 mt-2">¿Qué hábitos o actitudes negativas te alejan de Dios y de los demás? Escríbelos para hacerlos conscientes.</p>
+                </div>
+
+                <form id="form-add-chain" class="flex gap-2 mb-8">
+                    <input
+                        type="text"
+                        id="input-chain"
+                        placeholder="Ej: Criticar a mis compañeros de trabajo..."
+                        class="flex-1 bg-slate-900/80 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    />
+                    <button 
+                        type="submit"
+                        id="btn-add-chain"
+                        disabled
+                        class="bg-violet-600 hover:bg-violet-500 disabled:bg-slate-800 disabled:text-slate-500 text-white px-6 py-3 rounded-lg font-medium transition-all"
+                    >
+                        Añadir
+                    </button>
+                </form>
+
+                <div id="chains-list-step1" class="space-y-3">
+                    <!-- Las cadenas se renderizan aquí -->
+                    <div id="empty-state-step1" class="text-center py-8 text-slate-500 italic border-2 border-dashed border-slate-800 rounded-lg">
+                        Aún no hay cadenas registradas. Añade al menos una para continuar.
+                    </div>
+                </div>
+
+                <div class="mt-10 flex justify-end">
+                    <button
+                        id="btn-next-to-2"
+                        disabled
+                        class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-950 px-8 py-3 rounded-lg font-bold transition-all"
+                    >
+                        Siguiente Paso <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 2: ROMPER CADENAS -->
+            <div id="step-2" class="step-container">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-semibold text-white flex items-center justify-center gap-2">
+                        <i data-lucide="unlink" class="text-amber-400"></i> Rompe las Cadenas
+                    </h2>
+                    <p class="text-slate-400 mt-2">La intención no basta. Para cada cadena, escribe la <strong>acción positiva y concreta</strong> que harás para romperla y construir tu puente.</p>
+                </div>
+
+                <div id="chains-list-step2" class="space-y-6">
+                    <!-- Tarjetas para romper cadenas se renderizan aquí -->
+                </div>
+
+                <!-- Puente Visualizador -->
+                <div class="w-full mt-8 p-6 bg-slate-900/50 rounded-xl border border-slate-800 relative overflow-hidden">
+                    <div class="text-center mb-4">
+                        <p class="text-sm text-violet-300 uppercase tracking-widest font-semibold">Tu Puente Hacia la Pascua</p>
+                        <p class="text-xs text-slate-400 mt-1">Cada cadena rota es un bloque de construcción</p>
+                    </div>
+                    
+                    <div class="relative h-24 flex items-end justify-between px-2">
+                        <!-- Acantilado Izquierdo -->
+                        <div class="w-16 h-16 bg-slate-800 rounded-tr-lg border-t border-r border-slate-700"></div>
+                        
+                        <!-- Hueco donde se construye el puente -->
+                        <div id="bridge-container" class="flex-1 h-8 flex items-center justify-center gap-1 px-2 relative z-10">
+                            <!-- Bloques del puente -->
+                        </div>
+
+                        <!-- Acantilado Derecho -->
+                        <div class="w-16 h-16 bg-slate-800 rounded-tl-lg border-t border-l border-slate-700 relative">
+                            <div id="bridge-sparkles" class="hidden absolute -top-10 left-1/2 -translate-x-1/2 text-amber-400 animate-bounce-custom">
+                                <i data-lucide="sparkles" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 flex justify-between items-center">
+                    <button id="btn-back-to-1" class="text-slate-400 hover:text-white transition-colors">Volver</button>
+                    <button
+                        id="btn-next-to-3"
+                        disabled
+                        class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-950 px-8 py-3 rounded-lg font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+                    >
+                        Firmar Contrato <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 3: EL CONTRATO -->
+            <div id="step-3" class="step-container">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-semibold text-white flex items-center justify-center gap-2">
+                        <i data-lucide="pen-tool" class="text-violet-400"></i> Tu Compromiso Personal
+                    </h2>
+                    <p class="text-slate-400 mt-2">Redacta tu contrato de Cuaresma. Sella tu voluntad frente a este propósito de enmienda.</p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-violet-900/50 p-6 md:p-8 rounded-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-400 to-violet-600"></div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-violet-300 mb-2 font-medium">Yo,</label>
+                        <input
+                            type="text"
+                            id="contract-name"
+                            placeholder="Escribe tu nombre..."
+                            class="w-full bg-slate-950 border-b-2 border-slate-700 px-0 py-2 text-xl text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-400 transition-colors"
+                        />
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-violet-300 mb-2 font-medium">Me comprometo esta Cuaresma a...</label>
+                        <textarea
+                            id="contract-commitment"
+                            placeholder="Ej: Ser más paciente con mi familia, dedicar 15 minutos diarios a la oración y cumplir mis acciones positivas..."
+                            rows="4"
+                            class="w-full bg-slate-950 border border-slate-700 rounded-lg p-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors resize-none"
+                        ></textarea>
+                    </div>
+
+                    <div class="text-sm text-slate-500 italic mt-6 border-t border-slate-800 pt-4">
+                        "Con la gracia de Dios, transformaré mis debilidades en los ladrillos de mi conversión."
+                    </div>
+                </div>
+
+                <div class="mt-10 flex justify-between items-center">
+                    <button id="btn-back-to-2" class="text-slate-400 hover:text-white transition-colors">Volver</button>
+                    <button
+                        id="btn-next-to-4"
+                        disabled
+                        class="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-800 disabled:text-slate-500 text-white px-8 py-3 rounded-lg font-bold transition-all"
+                    >
+                        Generar Mi Pacto <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 4: TICKET / RESULTADO -->
+            <div id="step-4" class="step-container">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">
+                        ¡Puente Construido!
+                    </h2>
+                    <p class="text-slate-300 mt-3">Tu propósito de enmienda está sellado. Descarga tu fondo de pantalla para recordarlo cada día.</p>
+                </div>
+
+                <!-- Vista Previa del Wallpaper -->
+                <div class="flex justify-center mb-8">
+                    <div class="w-64 h-[455px] bg-gradient-to-b from-violet-950 via-slate-900 to-slate-950 rounded-2xl border-4 border-slate-800 p-4 relative shadow-[0_0_40px_rgba(139,92,246,0.3)] flex flex-col items-center">
+                        <div class="absolute top-2 w-16 h-1 bg-slate-800 rounded-full"></div>
+                        
+                        <div class="text-[10px] text-amber-400 font-bold mt-6 tracking-wider">CUARESMA 2026</div>
+                        <div class="text-center leading-tight mt-2">
+                            <div class="text-slate-50 text-xl font-bold">MI PACTO DE</div>
+                            <div class="text-slate-50 text-xl font-bold">CONVERSIÓN</div>
+                        </div>
+                        
+                        <div class="w-16 h-0.5 bg-violet-500 my-4"></div>
+                        
+                        <div id="preview-contract" class="text-slate-300 text-[10px] italic text-center px-2">
+                            <!-- Nombre dinámico -->
+                        </div>
+                        
+                        <div class="mt-4 w-full">
+                            <div class="text-amber-400 text-[9px] font-bold mb-2">MIS PIEDRAS:</div>
+                            <div id="preview-stones" class="space-y-2">
+                                <!-- Piedras dinámicas -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                    <button
+                        id="btn-download"
+                        class="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 px-8 py-4 rounded-xl font-bold transition-all shadow-lg text-lg w-full sm:w-auto"
+                    >
+                        <i data-lucide="download" class="w-6 h-6"></i>
+                        <span id="btn-download-text">Descargar Fondo (Móvil)</span>
+                    </button>
+                    
+                    <button
+                        id="btn-restart"
+                        class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-medium transition-all w-full sm:w-auto"
+                    >
+                        <i data-lucide="refresh-ccw" class="w-5 h-5"></i> Comenzar de Nuevo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- App Logic -->
+    <script>
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        // Estado de la aplicación
+        const state = {
+            step: 1,
+            chains: [],
+            contract: { name: '', commitment: '' }
+        };
+
+        // Elementos del DOM generales
+        const steps = [
+            document.getElementById('step-1'),
+            document.getElementById('step-2'),
+            document.getElementById('step-3'),
+            document.getElementById('step-4')
+        ];
+        
+        function updateProgressIndicators() {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`prog-${i}`);
+                if (state.step >= i) {
+                    el.className = "step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 bg-violet-600 text-white shadow-[0_0_15px_rgba(124,58,237,0.5)]";
+                } else {
+                    el.className = "step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 bg-slate-900 text-slate-500 border border-slate-700";
+                }
+            }
+        }
+
+        function setStep(newStep) {
+            steps.forEach((el, index) => {
+                if (index + 1 === newStep) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            state.step = newStep;
+            updateProgressIndicators();
+            
+            if(newStep === 2) renderStep2();
+            if(newStep === 4) renderStep4();
+            
+            lucide.createIcons();
+        }
+
+        // --- PASO 1 LÓGICA ---
+        const inputChain = document.getElementById('input-chain');
+        const btnAddChain = document.getElementById('btn-add-chain');
+        const formAddChain = document.getElementById('form-add-chain');
+        const chainsListStep1 = document.getElementById('chains-list-step1');
+        const btnNextTo2 = document.getElementById('btn-next-to-2');
+
+        inputChain.addEventListener('input', (e) => {
+            btnAddChain.disabled = e.target.value.trim() === '';
+        });
+
+        formAddChain.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = inputChain.value.trim();
+            if (val) {
+                state.chains.push({
+                    id: Date.now(),
+                    negative: val,
+                    positive: '',
+                    isBroken: false
+                });
+                inputChain.value = '';
+                btnAddChain.disabled = true;
+                renderStep1Chains();
+            }
+        });
+
+        function removeChain(id) {
+            state.chains = state.chains.filter(c => c.id !== id);
+            renderStep1Chains();
+        }
+
+        function renderStep1Chains() {
+            chainsListStep1.innerHTML = '';
+            
+            if (state.chains.length === 0) {
+                chainsListStep1.innerHTML = `
+                    <div id="empty-state-step1" class="text-center py-8 text-slate-500 italic border-2 border-dashed border-slate-800 rounded-lg">
+                        Aún no hay cadenas registradas. Añade al menos una para continuar.
+                    </div>`;
+                btnNextTo2.disabled = true;
+            } else {
+                state.chains.forEach(chain => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-900/50 border border-slate-800 p-4 rounded-lg group";
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="link" class="text-slate-500 w-5 h-5"></i>
+                            <span class="text-slate-300">${chain.negative}</span>
+                        </div>
+                        <button onclick="removeChain(${chain.id})" class="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                    `;
+                    chainsListStep1.appendChild(div);
+                });
+                btnNextTo2.disabled = false;
+            }
+            lucide.createIcons();
+        }
+
+        btnNextTo2.addEventListener('click', () => setStep(2));
+
+        // --- PASO 2 LÓGICA ---
+        const chainsListStep2 = document.getElementById('chains-list-step2');
+        const bridgeContainer = document.getElementById('bridge-container');
+        const bridgeSparkles = document.getElementById('bridge-sparkles');
+        const btnBackTo1 = document.getElementById('btn-back-to-1');
+        const btnNextTo3 = document.getElementById('btn-next-to-3');
+
+        function breakChain(id) {
+            const inputEl = document.getElementById(`input-break-${id}`);
+            const positiveVal = inputEl.value.trim();
+            if(positiveVal) {
+                const chain = state.chains.find(c => c.id === id);
+                if(chain) {
+                    chain.positive = positiveVal;
+                    chain.isBroken = true;
+                    renderStep2();
+                }
+            }
+        }
+
+        function checkInputBreak(id) {
+            const inputEl = document.getElementById(`input-break-${id}`);
+            const btnEl = document.getElementById(`btn-break-${id}`);
+            btnEl.disabled = inputEl.value.trim() === '';
+        }
+
+        function renderStep2() {
+            chainsListStep2.innerHTML = '';
+            let brokenCount = 0;
+
+            state.chains.forEach(chain => {
+                if (chain.isBroken) {
+                    brokenCount++;
+                    const div = document.createElement('div');
+                    div.className = "bg-emerald-950/30 border border-emerald-900/50 p-5 rounded-xl flex flex-col md:flex-row items-center gap-4 shadow-inner animate-in duration-500";
+                    div.innerHTML = `
+                        <div class="bg-emerald-900/50 p-3 rounded-full text-emerald-400">
+                            <i data-lucide="unlink" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <p class="text-emerald-300 font-bold text-lg mb-1">${chain.positive}</p>
+                            <p class="text-slate-400 text-sm line-through decoration-slate-600">En lugar de: ${chain.negative}</p>
+                        </div>
+                        <div class="text-emerald-500 hidden md:block">
+                            <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+                        </div>
+                    `;
+                    chainsListStep2.appendChild(div);
+                } else {
+                    const div = document.createElement('div');
+                    div.className = "bg-slate-900 border border-slate-700 p-5 rounded-xl relative overflow-hidden transition-all";
+                    div.innerHTML = `
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="bg-slate-800 p-2 rounded-lg text-slate-400 shrink-0">
+                                <i data-lucide="link" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-slate-400 mb-1 uppercase tracking-wide font-semibold">Cadena a romper:</p>
+                                <p class="text-slate-200 text-lg">${chain.negative}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2 mt-4">
+                            <input
+                                type="text"
+                                id="input-break-${chain.id}"
+                                oninput="checkInputBreak(${chain.id})"
+                                placeholder="Escribe la acción positiva que la romperá..."
+                                class="flex-1 bg-slate-950 border border-violet-900/50 rounded-lg px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                            />
+                            <button 
+                                id="btn-break-${chain.id}"
+                                onclick="breakChain(${chain.id})"
+                                disabled
+                                class="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-800 disabled:text-slate-500 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 group"
+                            >
+                                <i data-lucide="hammer" class="w-5 h-5 group-hover:-rotate-45 transition-transform"></i> Romper
+                            </button>
+                        </div>
+                    `;
+                    chainsListStep2.appendChild(div);
+                }
+            });
+
+            // Render Bridge
+            bridgeContainer.innerHTML = '';
+            if (state.chains.length === 0) {
+                 bridgeContainer.innerHTML = `<div class="w-full text-center text-slate-600 text-sm border-b-2 border-dashed border-slate-700 h-0">El abismo de nuestros defectos</div>`;
+            } else {
+                state.chains.forEach(chain => {
+                    const block = document.createElement('div');
+                    let classes = "h-4 transition-all duration-1000 ease-out flex-1 rounded-sm border-b-4 ";
+                    if (chain.isBroken) {
+                        classes += "bg-amber-600 border-amber-800 shadow-[0_0_15px_rgba(251,191,36,0.5)] translate-y-0 opacity-100";
+                    } else {
+                        classes += "bg-transparent border-transparent -translate-y-10 opacity-0";
+                    }
+                    block.className = classes;
+                    bridgeContainer.appendChild(block);
+                });
+            }
+
+            const allBroken = state.chains.length > 0 && brokenCount === state.chains.length;
+            btnNextTo3.disabled = !allBroken;
+            
+            if (allBroken) {
+                bridgeSparkles.classList.remove('hidden');
+            } else {
+                bridgeSparkles.classList.add('hidden');
+            }
+
+            lucide.createIcons();
+        }
+
+        btnBackTo1.addEventListener('click', () => setStep(1));
+        btnNextTo3.addEventListener('click', () => setStep(3));
+
+        // --- PASO 3 LÓGICA ---
+        const inputName = document.getElementById('contract-name');
+        const inputCommitment = document.getElementById('contract-commitment');
+        const btnBackTo2 = document.getElementById('btn-back-to-2');
+        const btnNextTo4 = document.getElementById('btn-next-to-4');
+
+        function checkContractValid() {
+            state.contract.name = inputName.value;
+            state.contract.commitment = inputCommitment.value;
+            btnNextTo4.disabled = !(state.contract.name.trim() && state.contract.commitment.trim());
+        }
+
+        inputName.addEventListener('input', checkContractValid);
+        inputCommitment.addEventListener('input', checkContractValid);
+
+        btnBackTo2.addEventListener('click', () => setStep(2));
+        btnNextTo4.addEventListener('click', () => setStep(4));
+
+        // --- PASO 4 LÓGICA ---
+        const previewContract = document.getElementById('preview-contract');
+        const previewStones = document.getElementById('preview-stones');
+        const btnDownload = document.getElementById('btn-download');
+        const btnDownloadText = document.getElementById('btn-download-text');
+        const btnRestart = document.getElementById('btn-restart');
+
+        function renderStep4() {
+            const firstName = state.contract.name.split(' ')[0] || 'Nombre';
+            previewContract.innerHTML = `"Yo, ${firstName}, me comprometo a..."`;
+
+            previewStones.innerHTML = '';
+            const topChains = state.chains.slice(0, 3);
+            topChains.forEach(chain => {
+                const div = document.createElement('div');
+                div.className = "flex gap-2 items-start";
+                div.innerHTML = `
+                    <i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-500 shrink-0 mt-0.5"></i>
+                    <div><div class="text-[9px] text-white leading-tight">${chain.positive}</div></div>
+                `;
+                previewStones.appendChild(div);
+            });
+
+            if (state.chains.length > 3) {
+                const moreDiv = document.createElement('div');
+                moreDiv.className = "text-[8px] text-slate-500 text-center italic";
+                moreDiv.textContent = `+ ${state.chains.length - 3} más`;
+                previewStones.appendChild(moreDiv);
+            }
+
+            lucide.createIcons();
+        }
+
+        btnRestart.addEventListener('click', () => {
+            state.step = 1;
+            state.chains = [];
+            state.contract = { name: '', commitment: '' };
+            inputChain.value = '';
+            inputName.value = '';
+            inputCommitment.value = '';
+            btnAddChain.disabled = true;
+            btnNextTo4.disabled = true;
+            renderStep1Chains();
+            setStep(1);
+        });
+
+        // Generación de Canvas
+        btnDownload.addEventListener('click', () => {
+            btnDownload.disabled = true;
+            btnDownloadText.textContent = 'Generando...';
+            
+            setTimeout(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1080;
+                canvas.height = 1920;
+                const ctx = canvas.getContext('2d');
+
+                // Fondo degradado Cuaresmal (Morado profundo a Negro)
+                const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                gradient.addColorStop(0, '#2e1065'); // violet-950
+                gradient.addColorStop(0.5, '#0f172a'); // slate-900
+                gradient.addColorStop(1, '#020617'); // slate-950
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 1080, 1920);
+
+                // Decoración: Estrellas / Polvo de oro
+                ctx.fillStyle = '#fbbf24'; // amber-400
+                for(let i=0; i<50; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * 1080, Math.random() * 1920, Math.random() * 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Título Superior
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#fbbf24'; // amber-400
+                ctx.font = 'bold 50px sans-serif';
+                ctx.fillText('CUARESMA 2026', 540, 150);
+                
+                ctx.fillStyle = '#f8fafc'; // slate-50
+                ctx.font = 'bold 80px sans-serif';
+                ctx.fillText('MI PACTO DE', 540, 250);
+                ctx.fillText('CONVERSIÓN', 540, 340);
+
+                // Separador
+                ctx.strokeStyle = '#8b5cf6'; // violet-500
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(340, 400);
+                ctx.lineTo(740, 400);
+                ctx.stroke();
+
+                // Contrato
+                ctx.fillStyle = '#cbd5e1'; // slate-300
+                ctx.font = 'italic 45px serif';
+                ctx.fillText(`"Yo, ${state.contract.name || 'Hijo(a) de Dios'},`, 540, 520);
+                ctx.fillText(`me comprometo a..."`, 540, 580);
+
+                // Texto del compromiso (Word Wrap)
+                ctx.font = '40px sans-serif';
+                ctx.fillStyle = '#f8fafc';
+                const wrapText = (text, x, y, maxWidth, lineHeight) => {
+                    const words = text.split(' ');
+                    let line = '';
+                    let currentY = y;
+                    for (let n = 0; n < words.length; n++) {
+                        const testLine = line + words[n] + ' ';
+                        const metrics = ctx.measureText(testLine);
+                        if (metrics.width > maxWidth && n > 0) {
+                            ctx.fillText(line, x, currentY);
+                            line = words[n] + ' ';
+                            currentY += lineHeight;
+                        } else {
+                            line = testLine;
+                        }
+                    }
+                    ctx.fillText(line, x, currentY);
+                    return currentY + lineHeight;
+                };
+                
+                let nextY = wrapText(state.contract.commitment, 540, 680, 880, 55);
+
+                // Mis Acciones (El Puente)
+                nextY += 80;
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = 'bold 45px sans-serif';
+                ctx.fillText('MIS PIEDRAS DE CONSTRUCCIÓN:', 540, nextY);
+                
+                nextY += 80;
+                ctx.textAlign = 'left';
+                state.chains.forEach((chain, index) => {
+                    if (nextY > 1700) return; // Limitar si son muchas
+                    
+                    // Icono (Check) simulado
+                    ctx.fillStyle = '#10b981'; // emerald-500
+                    ctx.beginPath();
+                    ctx.arc(140, nextY - 12, 15, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Texto de la acción
+                    ctx.fillStyle = '#f8fafc';
+                    ctx.font = '38px sans-serif';
+                    ctx.fillText(chain.positive, 180, nextY);
+                    
+                    // Texto de la cadena rota (pequeño abajo)
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = 'italic 28px sans-serif';
+                    ctx.fillText(`(En lugar de: ${chain.negative})`, 180, nextY + 35);
+
+                    nextY += 100;
+                });
+
+                // Pie de página
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#64748b';
+                ctx.font = '30px sans-serif';
+                ctx.fillText('El Constructor de Puentes - Cuaresma', 540, 1850);
+
+                // Descargar
+                const link = document.createElement('a');
+                const safeName = state.contract.name.replace(/\s+/g, '_') || '2026';
+                link.download = `Mi_Pacto_Cuaresma_${safeName}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btnDownload.disabled = false;
+                btnDownloadText.textContent = 'Descargar Fondo (Móvil)';
+                
+            }, 300); // Pequeño delay para mostrar el estado de "Generando..."
+        });
+
+    </script>
+</body>
+</html>
